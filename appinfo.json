@@ -1,0 +1,22 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "darkhawke@gmail.com",
+    "longName": "First watchface",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "First watchface",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "2558bec5-cd84-46f3-9363-98e76a3643ec",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}

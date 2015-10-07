@@ -5,24 +5,33 @@ static TextLayer *s_time_layer;
 static GFont s_time_font;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
+static TextLayer *s_date_layer;
 
 static void update_time() {
   time_t temp = time(NULL);
   struct tm *tick_time = localtime(&temp);
-  
-  static char buffer[] = "00:00";
+  static char buffer[10] = "00:00";
   
   if (clock_is_24h_style() == true){
     strftime(buffer, sizeof("00:00"), "%H:%M", tick_time);
   } else {
     strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
   }
-  
   text_layer_set_text(s_time_layer, buffer);
+}
+
+static void update_date(){
+   time_t temp = time(NULL);
+  struct tm *tick_time = localtime(&temp);
+  static char buffer[10] = "00:00";
+
+  strftime(buffer, 10, "%d-%b", tick_time);  
+  text_layer_set_text(s_date_layer, buffer);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed){
   update_time();
+  update_date();
 }
 
 static void main_window_load(Window *window) {
@@ -42,12 +51,21 @@ static void main_window_load(Window *window) {
   text_layer_set_text_color(s_time_layer, GColorBlack);
   text_layer_set_text(s_time_layer, "00:00");
   
+  //Create date textlayer
+  s_date_layer = text_layer_create(GRect(5, 120, 144, 50));
+  text_layer_set_background_color(s_date_layer, GColorClear);
+  text_layer_set_text_color(s_date_layer, GColorWhite);
+  text_layer_set_text(s_date_layer, "0101");
+  text_layer_set_font(s_date_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24));
+  text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
+  
   //Improve layout
   text_layer_set_font(s_time_layer, s_time_font);
   text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
   
   //Add it as a child layer
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
 }
 
 static void main_window_unload(Window *window) {
@@ -60,7 +78,7 @@ static void main_window_unload(Window *window) {
 
 static void init() {
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
-  
+
   s_main_window = window_create();
   
   window_set_window_handlers(s_main_window, (WindowHandlers){
@@ -71,6 +89,7 @@ static void init() {
   window_stack_push(s_main_window, true);
   
   update_time();
+  update_date();
 }
 
 static void deinit() {
